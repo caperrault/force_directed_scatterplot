@@ -3,7 +3,13 @@
 <style>
 
 body {
-  font: 10px sans-serif;
+  font: 14px sans-serif;
+  color: red;
+  background-color: #000;
+}
+
+.axis {
+  fill: #fff;
 }
 
 .axis path,
@@ -14,7 +20,7 @@ body {
 }
 
 .dot {
-  stroke: #000;
+  stroke: #fff;
   stroke-opacity: .7;
   fill-opacity: .7;
 }
@@ -24,6 +30,7 @@ body {
   position: absolute;
   top: 120px;
   left: 810px;
+  color: red;
 }
 
 input {
@@ -51,7 +58,8 @@ var color = d3.scale.category10();
 
 var xAxis = d3.svg.axis()
     .scale(x)
-    .orient("bottom");
+    .orient("bottom")
+    .tickFormat(d3.format(""));
 
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -59,8 +67,8 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var controls = d3.select("body").append("label")
-    .attr("id", "controls");
+// var controls = d3.select("body").append("label")
+//     .attr("id", "controls");
 // var checkbox = controls.append("input")
 //     .attr("id", "collisiondetection")
 //     .attr("type", "checkbox");
@@ -110,9 +118,9 @@ d3.csv("graph2.csv", function(error, data) {
       .style("fill", function(d) { return d.color; })
       .call(force.drag);;
 
-  d3.select("#collisiondetection").on("change", function() {
-    force.resume();
-  });
+  // d3.select("#collisiondetection").on("change", function() {
+  //   force.resume();
+  // });
 
   force.start();
 
