@@ -38,7 +38,7 @@ input {
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom,
-    padding = 1, // separation between nodes
+    padding = 1,
     radius = 6;
 
 var x = d3.scale.linear()
@@ -53,10 +53,6 @@ var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left");
-
 var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
@@ -65,14 +61,14 @@ var svg = d3.select("body").append("svg")
 
 var controls = d3.select("body").append("label")
     .attr("id", "controls");
-var checkbox = controls.append("input")
-    .attr("id", "collisiondetection")
-    .attr("type", "checkbox");
-controls.append("span")
-    .text("Collision detection");
+// var checkbox = controls.append("input")
+//     .attr("id", "collisiondetection")
+//     .attr("type", "checkbox");
+// controls.append("span")
+//     .text("Collision detection");
 
-d3.tsv("data.tsv", function(error, data) {
-  var xVar = "sepalWidth",
+d3.csv("graph2.csv", function(error, data) {
+  var xVar = "year",
       yVar = "sepalLength";
 
   data.forEach(function(d) {
@@ -88,7 +84,7 @@ d3.tsv("data.tsv", function(error, data) {
     .gravity(0)
     .chargeDistance(20);
 
-  x.domain([0,5]);
+  x.domain([1980,2015]);
   y.domain([0,9]);
 
   // Set initial positions
@@ -103,23 +99,6 @@ d3.tsv("data.tsv", function(error, data) {
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("x", width)
-      .attr("y", -6)
-      .style("text-anchor", "end")
-      .text("Sepal Width (cm)");
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-    .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 6)
-      .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text("Sepal Length (cm)")
 
   var node = svg.selectAll(".dot")
       .data(data)
@@ -128,26 +107,8 @@ d3.tsv("data.tsv", function(error, data) {
       .attr("r", radius)
       .attr("cx", function(d) { return x(d[xVar]); })
       .attr("cy", function(d) { return y(d[yVar]); })
-      .style("fill", function(d) { return d.color; });
-
-  var legend = svg.selectAll(".legend")
-      .data(color.domain())
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-
-  legend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
-
-  legend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .style("text-anchor", "end")
-      .text(function(d) { return d; });
+      .style("fill", function(d) { return d.color; })
+      .call(force.drag);;
 
   d3.select("#collisiondetection").on("change", function() {
     force.resume();
@@ -158,7 +119,8 @@ d3.tsv("data.tsv", function(error, data) {
   function tick(e) {
     node.each(moveTowardDataPosition(e.alpha));
 
-    if (checkbox.node().checked) node.each(collide(e.alpha));
+  //  if (checkbox.node().checked)
+    node.each(collide(e.alpha));
 
     node.attr("cx", function(d) { return d.x; })
         .attr("cy", function(d) { return d.y; });
