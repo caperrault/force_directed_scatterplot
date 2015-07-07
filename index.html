@@ -15,7 +15,7 @@ body {
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
+  stroke: none;
   shape-rendering: crispEdges;
 }
 
@@ -43,7 +43,7 @@ input {
 <script>
 
 var margin = {top: 20, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
+    width = 1200 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom,
     padding = 1,
     radius = 6;
@@ -108,15 +108,47 @@ d3.csv("graph2.csv", function(error, data) {
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis)
 
-  var node = svg.selectAll(".dot")
-      .data(data)
-    .enter().append("circle")
-      .attr("class", "dot")
-      .attr("r", radius)
-      .attr("cx", function(d) { return x(d[xVar]); })
-      .attr("cy", function(d) { return y(d[yVar]); })
-      .style("fill", function(d) { return d.color; })
-      .call(force.drag);;
+  // var node = svg.selectAll(".dot")
+  //     .data(data)
+  //   .enter().append("circle")
+  //     .attr("class", "dot")
+  //     .attr("r", radius)
+  //     .attr("cx", function(d) { return x(d[xVar]); })
+  //     .attr("cy", function(d) { return y(d[yVar]); })
+  //     .style("fill", function(d) { return d.color; })
+  //     .call(force.drag);
+
+  var node = svg.selectAll(".node")
+          .data(data)
+        .enter().append("g")
+           .attr("class", "node")
+          .call(force.drag);
+
+  // var circle = svg.append("svg:g").selectAll("circle")
+  //           .data(data)
+  //         .enter().append("svg:circle")
+  //           .attr("r", radius)
+  //           .style("fill-opacity", 1)
+  //           .style("fill", "red")
+  //           .style("stroke", "white")
+  //           .style("stroke-width", 1)
+  //           // .style("pointer-events", "none")
+  //         //  .style("opacity", 0)
+  //           // .on("mouseover", function(d) {
+  //           //                   div.transition().duration(300).style("opacity", 1);
+  //           //                   div.text(d.name + " (" + d.year + ")")
+  //           //                   .style("left", (d3.event.pageX) + "px")
+  //           //                   .style("top", (d3.event.pageY -30) + "px");})
+  //           // .on("mouseout", function (d) { div.transition().duration(300).style("opacity", 0);})
+  //           .call(force.drag);
+
+
+      node.append("image")
+        .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
+        .attr("x", -8)
+        .attr("y", -8)
+        .attr("width", 16)
+        .attr("height", 16);
 
   // d3.select("#collisiondetection").on("change", function() {
   //   force.resume();
@@ -130,8 +162,11 @@ d3.csv("graph2.csv", function(error, data) {
   //  if (checkbox.node().checked)
     node.each(collide(e.alpha));
 
-    node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+    // node.attr("cx", function(d) { return d.x; })
+    //     .attr("cy", function(d) { return d.y; });
+  //circle.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")";});
+  node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
   }
 
   function moveTowardDataPosition(alpha) {
