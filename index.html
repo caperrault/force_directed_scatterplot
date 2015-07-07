@@ -29,12 +29,20 @@ body {
   cursor: pointer;
 }
 
-#controls {
+#controlsFilm {
   font-size: 14px;
   position: absolute;
-  top: 120px;
-  left: 810px;
-  color: red;
+  top: 450px;
+  left: 20px;
+  color: white;
+}
+
+#controlsTV {
+  font-size: 14px;
+  position: absolute;
+  top: 650px;
+  left: 20px;
+  color: white;
 }
 
 input {
@@ -61,9 +69,9 @@ div.mapTooltip {
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var margin = {top: 20, right: 20, bottom: 30, left: 40},
+var margin = {top: 20, right: 20, bottom: 30, left: 100},
     width = 1200 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom,
+    height = 800 - margin.top - margin.bottom,
     padding = 1,
     radius = 6;
 
@@ -77,7 +85,7 @@ var color = d3.scale.category10();
 
 var xAxis = d3.svg.axis()
     .scale(x)
-    .orient("bottom")
+    .orient("top")
     .tickFormat(d3.format(""));
 
 var svg = d3.select("body").append("svg")
@@ -90,13 +98,21 @@ var div = d3.select("body").append("div")
               .attr("class", "mapTooltip")
               .style("opacity", 0);
 
-// var controls = d3.select("body").append("label")
-//     .attr("id", "controls");
-// var checkbox = controls.append("input")
-//     .attr("id", "collisiondetection")
-//     .attr("type", "checkbox");
-// controls.append("span")
-//     .text("Collision detection");
+var controlsFilm = d3.select("body").append("label")
+    .attr("id", "controlsFilm");
+var checkbox = controlsFilm.append("input")
+    .attr("id", "collisiondetection")
+    .attr("type", "checkbox");
+controlsFilm.append("span")
+    .text("Film");
+
+// var controlsTV = d3.select("body").append("label")
+//         .attr("id", "controlsTV");
+// var checkbox = controlsTV.append("input")
+//         .attr("id", "collisiondetection")
+//         .attr("type", "checkbox");
+//     controlsTV.append("span")
+//         .text("TV");
 
 d3.csv("graph2.csv", function(error, data) {
   var xVar = "year",
@@ -121,14 +137,14 @@ d3.csv("graph2.csv", function(error, data) {
   // Set initial positions
   data.forEach(function(d) {
     d.x = x(d[xVar]);
-    d.y = y(d[yVar]);
+    d.y = y(d[yVar-1]);
     d.color = color(d.species);
     d.radius = radius;
   });
 
   svg.append("g")
       .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(0,100)")
       .call(xAxis)
 
   // var node = svg.selectAll(".dot")
@@ -153,25 +169,6 @@ d3.csv("graph2.csv", function(error, data) {
           .on("mouseout", function (d) { div.transition().duration(300).style("opacity", 0);})
           .call(force.drag);
 
-  // var circle = svg.append("svg:g").selectAll("circle")
-  //           .data(data)
-  //         .enter().append("svg:circle")
-  //           .attr("r", radius)
-  //           .style("fill-opacity", 1)
-  //           .style("fill", "red")
-  //           .style("stroke", "white")
-  //           .style("stroke-width", 1)
-  //           // .style("pointer-events", "none")
-  //         //  .style("opacity", 0)
-  //           // .on("mouseover", function(d) {
-  //           //                   div.transition().duration(300).style("opacity", 1);
-  //           //                   div.text(d.name + " (" + d.year + ")")
-  //           //                   .style("left", (d3.event.pageX) + "px")
-  //           //                   .style("top", (d3.event.pageY -30) + "px");})
-  //           // .on("mouseout", function (d) { div.transition().duration(300).style("opacity", 0);})
-  //           .call(force.drag);
-
-
       node.append("image")
         .attr("xlink:href", function(d) { return "img/" + d.name + ".jpg"; })
         .attr("x", -8)
@@ -179,16 +176,15 @@ d3.csv("graph2.csv", function(error, data) {
         .attr("width", 16)
         .attr("height", 16);
 
-  // d3.select("#collisiondetection").on("change", function() {
-  //   force.resume();
-  // });
+  d3.select("#collisiondetection").on("change", function() {
+    force.resume();
+  });
 
   force.start();
 
   function tick(e) {
     node.each(moveTowardDataPosition(e.alpha));
 
-  //  if (checkbox.node().checked)
     node.each(collide(e.alpha));
 
     // node.attr("cx", function(d) { return d.x; })
@@ -201,7 +197,13 @@ d3.csv("graph2.csv", function(error, data) {
   function moveTowardDataPosition(alpha) {
     return function(d) {
       d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
-      d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+
+    if (checkbox.node().checked && d.type === "film") {
+      return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha + 0.2;
+    }
+    else {
+      return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+    }
     };
   }
 
