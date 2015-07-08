@@ -40,7 +40,7 @@ body {
 #controlsTV {
   font-size: 14px;
   position: absolute;
-  top: 650px;
+  top: 630px;
   left: 20px;
   color: white;
 }
@@ -100,19 +100,19 @@ var div = d3.select("body").append("div")
 
 var controlsFilm = d3.select("body").append("label")
     .attr("id", "controlsFilm");
-var checkbox = controlsFilm.append("input")
-    .attr("id", "collisiondetection")
+var checkboxFilm = controlsFilm.append("input")
+    .attr("class", "collisiondetection")
     .attr("type", "checkbox");
 controlsFilm.append("span")
     .text("Film");
 
-// var controlsTV = d3.select("body").append("label")
-//         .attr("id", "controlsTV");
-// var checkbox = controlsTV.append("input")
-//         .attr("id", "collisiondetection")
-//         .attr("type", "checkbox");
-//     controlsTV.append("span")
-//         .text("TV");
+var controlsTV = d3.select("body").append("label")
+        .attr("id", "controlsTV");
+var checkboxTV = controlsTV.append("input")
+        .attr("class", "collisiondetection")
+        .attr("type", "checkbox");
+    controlsTV.append("span")
+        .text("TV");
 
 d3.csv("graph2.csv", function(error, data) {
   var xVar = "year",
@@ -176,7 +176,7 @@ d3.csv("graph2.csv", function(error, data) {
         .attr("width", 16)
         .attr("height", 16);
 
-  d3.select("#collisiondetection").on("change", function() {
+  d3.select(".collisiondetection").on("change", function() {
     force.resume();
   });
 
@@ -198,14 +198,43 @@ d3.csv("graph2.csv", function(error, data) {
     return function(d) {
       d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
 
-    if (checkbox.node().checked && d.type === "film") {
+    if (checkboxFilm.node().checked && d.type === "film") {
       return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha + 0.2;
     }
+
+    else if (checkboxTV.node().checked && d.type === "tv") {
+      return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha + 0.4;
+    }
+
     else {
       return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
     }
     };
   }
+
+  // function moveTowardDataPosition(alpha) {
+  //   return function(d) {
+  //     d.x += (x(d[xVar]) - d.x) * 0.1 * alpha;
+  //
+  //   if (checkboxFilm.node().checked=true) && checkboxTV.node().checked=false) {
+  //   return if (d.type === "film") {
+  //     return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha + 0.2;
+  //   }
+  //
+  //   else {
+  //     return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+  //   }
+  // }
+  //
+  //   else if (checkboxTV.node().checked && d.type === "tv") {
+  //     return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha + 0.4;
+  //   }
+  //
+  //   else {
+  //     return d.y += (y(d[yVar]) - d.y) * 0.1 * alpha;
+  //   }
+  //   };
+  // }
 
   // Resolve collisions between nodes.
   function collide(alpha) {
